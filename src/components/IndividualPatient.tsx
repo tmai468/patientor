@@ -2,14 +2,14 @@
 import axios from "axios";
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Grid, Icon } from "semantic-ui-react";
+import { Grid, Icon, Button } from "semantic-ui-react";
 import { SemanticWIDTHS } from "semantic-ui-react/dist/commonjs/generic";
 import AddEntryModal from "../AddEntryModal";
-import AddPatientModal from "../AddPatientModal";
+// import AddPatientModal from "../AddPatientModal";
 import { apiBaseUrl } from "../constants";
 // import { apiBaseUrl } from "../constants";
 // import { Patient } from "../types";
-import { findIndividualPatient, useStateValue } from "../state";
+import { findIndividualPatient, updatePatient, useStateValue } from "../state";
 import { EntryType, NewEntry, Patient } from "../types";
 import EntryDetails from "./EntryDetails";
 // import { Patient } from "../types";
@@ -26,6 +26,10 @@ const IndividualPatient = () => {
         setError(undefined);
     };
 
+    const openModal = (): void => {
+        setModalOpen(true);
+    }
+
     const submitNewEntry = async (values: NewEntry) => {
         const body = { ...values };
 
@@ -40,7 +44,8 @@ const IndividualPatient = () => {
                 `${apiBaseUrl}/patients/${id}/entries`,
                 body
             );
-
+            dispatch(updatePatient(returnedPatient));
+            closeModal();
         } catch (e: unknown) {
             let errorMessage = "Something went wrong.";
             if (e instanceof Error) {
@@ -113,9 +118,10 @@ const IndividualPatient = () => {
         <AddEntryModal
         modalOpen = {modalOpen}
         onClose={closeModal}
-        onSubmit={}
-        
-        />>
+        onSubmit={submitNewEntry}
+        error={error}
+        />
+        <Button onClick={openModal}>Add New Entry</Button>
     </div>
     );
 };
